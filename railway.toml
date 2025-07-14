@@ -1,0 +1,16 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "pnpm run build"
+
+[deploy]
+startCommand = "pnpm start"
+restartPolicyType = "ALWAYS"
+
+[phases.setup]
+nixPkgs = [
+  "python3",
+  "gnumake",
+  "gcc",
+  "libstdc++",
+  "pkg-config"
+]

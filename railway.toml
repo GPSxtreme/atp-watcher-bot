@@ -6,6 +6,8 @@ buildCommand = "pnpm run build"
 startCommand = "pnpm start"
 restartPolicyType = "ALWAYS"
 
+providers = ["node", "python"]
+
 [phases.setup]
 nixPkgs = [
   "python3",

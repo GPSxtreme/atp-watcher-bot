@@ -504,22 +504,6 @@ Set `LOG_LEVEL=debug` in your `.env` file for comprehensive logging including:
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow the modular architecture pattern
-- Add comprehensive command help integration
-- Include database schema updates for new features
-- Maintain configuration persistence for user settings
-- Add appropriate error handling and logging
-
 ## 🔗 Links
 
 - [IQ Agents Platform](https://app.iqai.com)

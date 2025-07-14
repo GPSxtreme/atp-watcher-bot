@@ -1,6 +1,8 @@
-# 🤖 IQ Agents Telegram Bot
+# 🤖 ATP Watcher Telegram Bot
 
-A powerful Telegram bot for monitoring your IQ Agents portfolio on the Fraxtal network. Get real-time notifications about portfolio value changes, price movements, agent statistics, and IQ token price fluctuations.
+A powerful Telegram bot for monitoring your IQ Agents portfolio. Get real-time notifications about portfolio value changes, price movements, agent statistics, and IQ token price fluctuations.
+
+<img src="./hero.png" />
 
 ## ✨ Features
 
@@ -20,7 +22,7 @@ A powerful Telegram bot for monitoring your IQ Agents portfolio on the Fraxtal n
 
 - Node.js 18+ and pnpm
 - Telegram Bot Token (from [@BotFather](https://t.me/BotFather))
-- Your wallet address on Fraxtal network
+- Your wallet address
 
 ### Installation
 
@@ -374,6 +376,8 @@ The bot is optimized for Railway deployment with enhanced configuration:
    ```
 
 4. **Deploy**: Railway will automatically build and deploy
+5. **IMPORTANT**: Ensure you add Python as language provider to build better-sqlite3 binaries
+<img src="./config.png" />
 
 ### Railway Configuration
 
@@ -472,18 +476,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## 🔗 Links
 
 - [IQ Agents Platform](https://app.iqai.com)
-- [Fraxtal Network](https://fraxtal.io)
 - [Telegram Bot API](https://core.telegram.org/bots/api)
 - [Railway Deployment](https://railway.app)
-
-## 🆘 Support
-
-If you encounter any issues or have questions:
-
-1. Check the [Troubleshooting](#-troubleshooting) section
-2. Use `/help` command for comprehensive usage guide
-3. Use `/config` and `/status` commands for system diagnostics
-4. Open an issue on GitHub with detailed information
-5. Contact the maintainer
 
 ---

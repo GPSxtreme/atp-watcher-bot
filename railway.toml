@@ -5,14 +5,3 @@ buildCommand = "pnpm run build"
 [deploy]
 startCommand = "pnpm start"
 restartPolicyType = "ALWAYS"
-
-providers = ["node", "python"]
-
-[phases.setup]
-nixPkgs = [
-  "python3",
-  "gnumake",
-  "gcc",
-  "libstdc++",
-  "pkg-config"
-]

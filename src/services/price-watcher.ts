@@ -335,27 +335,37 @@ export class PriceWatcher extends EventEmitter {
 				`📊 ${token.config.tokenName}: ${agentsApi.formatCurrency(currentPrice)} (${changePercentage.toFixed(2)}%)`,
 			);
 
+			// Only send alerts if there's actually a price change
+			if (Math.abs(changePercentage) === 0) {
+				// No price change, skip alert
+				return;
+			}
+
 			let alertType: PriceAlert["type"] = "significant_change";
 			let alertSeverity: PriceAlert["severity"] = "medium";
+			let threshold = 0;
+			let shouldAlert = false;
 
-			if (Math.abs(changePercentage) < token.config.thresholds.minor) {
-				alertType = "minor_change";
-				alertSeverity = "low";
-			} else if (Math.abs(changePercentage) < token.config.thresholds.major) {
-				alertType = "major_change";
-				alertSeverity = "high";
-			} else if (
-				Math.abs(changePercentage) >= token.config.thresholds.critical
-			) {
+			// Determine alert type based on threshold exceeded
+			if (Math.abs(changePercentage) >= token.config.thresholds.critical) {
 				alertType = "critical_change";
 				alertSeverity = "critical";
+				threshold = token.config.thresholds.critical;
+				shouldAlert = token.config.enableCriticalAlerts;
+			} else if (Math.abs(changePercentage) >= token.config.thresholds.major) {
+				alertType = "major_change";
+				alertSeverity = "high";
+				threshold = token.config.thresholds.major;
+				shouldAlert = token.config.enableMajorAlerts;
+			} else if (Math.abs(changePercentage) >= token.config.thresholds.minor) {
+				alertType = "minor_change";
+				alertSeverity = "low";
+				threshold = token.config.thresholds.minor;
+				shouldAlert = token.config.enableMinorAlerts;
 			}
 
-			if (alertType === "significant_change") {
-				alertType = change > 0 ? "price_increase" : "price_decrease";
-			}
-
-			if (token.config.enableMinorAlerts && alertType === "minor_change") {
+			// Only send alert if threshold is exceeded and alerts are enabled
+			if (shouldAlert && threshold > 0) {
 				const alert: PriceAlert = {
 					type: alertType,
 					severity: alertSeverity,
@@ -365,7 +375,7 @@ export class PriceWatcher extends EventEmitter {
 						previousPrice,
 						change,
 						changePercentage,
-						token.config.thresholds.minor,
+						threshold,
 					),
 					tokenContract,
 					tokenName: token.config.tokenName,
@@ -373,57 +383,7 @@ export class PriceWatcher extends EventEmitter {
 					previousPrice,
 					change,
 					changePercentage,
-					threshold: token.config.thresholds.minor,
-					timestamp: new Date(),
-				};
-				this.emit("alert", alert);
-			} else if (
-				token.config.enableMajorAlerts &&
-				alertType === "major_change"
-			) {
-				const alert: PriceAlert = {
-					type: alertType,
-					severity: alertSeverity,
-					message: this.createPriceAlertMessage(
-						token.config.tokenName,
-						currentPrice,
-						previousPrice,
-						change,
-						changePercentage,
-						token.config.thresholds.major,
-					),
-					tokenContract,
-					tokenName: token.config.tokenName,
-					currentPrice,
-					previousPrice,
-					change,
-					changePercentage,
-					threshold: token.config.thresholds.major,
-					timestamp: new Date(),
-				};
-				this.emit("alert", alert);
-			} else if (
-				token.config.enableCriticalAlerts &&
-				alertType === "critical_change"
-			) {
-				const alert: PriceAlert = {
-					type: alertType,
-					severity: alertSeverity,
-					message: this.createPriceAlertMessage(
-						token.config.tokenName,
-						currentPrice,
-						previousPrice,
-						change,
-						changePercentage,
-						token.config.thresholds.critical,
-					),
-					tokenContract,
-					tokenName: token.config.tokenName,
-					currentPrice,
-					previousPrice,
-					change,
-					changePercentage,
-					threshold: token.config.thresholds.critical,
+					threshold,
 					timestamp: new Date(),
 				};
 				this.emit("alert", alert);

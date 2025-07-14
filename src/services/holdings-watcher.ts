@@ -122,7 +122,9 @@ export class HoldingsWatcher extends EventEmitter {
 					currentValue,
 				);
 
+				// Only send alerts if there's actually a portfolio value change
 				if (
+					Math.abs(changePercentage) > 0 &&
 					Math.abs(changePercentage) >= this.config.significantChangePercentage
 				) {
 					const alert: HoldingsAlert = {

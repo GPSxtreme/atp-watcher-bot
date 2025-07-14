@@ -121,31 +121,37 @@ export class IQPriceWatcher extends EventEmitter {
 					currentPrice,
 				);
 
+				// Only send alerts if there's actually a price change
+				if (Math.abs(changePercentage) === 0) {
+					// No price change, skip alert
+					return;
+				}
+
 				let alertType: IQPriceAlert["type"] = "iq_significant_change";
 				let alertSeverity: IQPriceAlert["severity"] = "medium";
-				let threshold = this.config.majorThreshold;
+				let threshold = 0;
+				let shouldAlert = false;
 
+				// Determine alert type based on threshold exceeded
 				if (Math.abs(changePercentage) >= this.config.criticalThreshold) {
 					alertType = "iq_significant_change";
 					alertSeverity = "critical";
 					threshold = this.config.criticalThreshold;
+					shouldAlert = this.config.enableCriticalAlerts;
 				} else if (Math.abs(changePercentage) >= this.config.majorThreshold) {
 					alertType = change > 0 ? "iq_price_increase" : "iq_price_decrease";
 					alertSeverity = "high";
 					threshold = this.config.majorThreshold;
+					shouldAlert = this.config.enableMajorAlerts;
 				} else if (Math.abs(changePercentage) >= this.config.minorThreshold) {
 					alertType = change > 0 ? "iq_price_increase" : "iq_price_decrease";
 					alertSeverity = "low";
 					threshold = this.config.minorThreshold;
+					shouldAlert = this.config.enableMinorAlerts;
 				}
 
-				// Check if we should send alert based on configuration
-				const shouldAlert =
-					(alertSeverity === "low" && this.config.enableMinorAlerts) ||
-					(alertSeverity === "high" && this.config.enableMajorAlerts) ||
-					(alertSeverity === "critical" && this.config.enableCriticalAlerts);
-
-				if (shouldAlert && Math.abs(changePercentage) >= threshold) {
+				// Only send alert if threshold is exceeded and alerts are enabled
+				if (shouldAlert && threshold > 0) {
 					const alert: IQPriceAlert = {
 						type: alertType,
 						severity: alertSeverity,

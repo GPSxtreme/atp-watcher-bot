@@ -19,6 +19,7 @@ class IQAgentsTelegramBot {
 	private holdingsWatcher: HoldingsWatcher;
 	private priceWatcher: PriceWatcher;
 	private iqPriceWatcher: IQPriceWatcher;
+	private userChatId: number | null = null;
 
 	constructor() {
 		this.bot = new Telegraf<BotContext>(env.TELEGRAM_BOT_TOKEN);
@@ -26,11 +27,65 @@ class IQAgentsTelegramBot {
 		this.priceWatcher = new PriceWatcher();
 		this.iqPriceWatcher = new IQPriceWatcher();
 
+		this.setupMiddleware();
 		this.setupCommands();
 		this.setupWatchers();
 	}
 
+	private setupMiddleware(): void {
+		// Authorization middleware
+		this.bot.use((ctx, next) => {
+			const userId = ctx.from?.id;
+			const chatId = ctx.chat?.id;
+
+			// If no authorized user configured, allow all
+			if (env.AUTHORIZED_USER_ID === null) {
+				// Store chat ID for notifications
+				if (chatId && chatId > 0) {
+					this.userChatId = chatId;
+				}
+				return next();
+			}
+
+			// Check if user is the authorized user
+			if (!userId || userId !== env.AUTHORIZED_USER_ID) {
+				ctx.reply(
+					"🚫 *Access Denied*\n\nThis bot is restricted to a single authorized user.",
+					{ parse_mode: "Markdown" },
+				);
+				return;
+			}
+
+			// Store the authorized user's chat ID for notifications
+			if (chatId && chatId > 0) {
+				this.userChatId = chatId;
+			}
+
+			return next();
+		});
+	}
+
 	private setupCommands(): void {
+		// Get user ID command (useful for configuration)
+		this.bot.command("myid", (ctx) => {
+			const userId = ctx.from?.id;
+			const username = ctx.from?.username;
+			const firstName = ctx.from?.first_name;
+
+			ctx.reply(
+				dedent`
+					👤 *Your Telegram Info:*
+
+					**User ID:** \`${userId}\`
+					**Username:** ${username ? `@${username}` : "Not set"}
+					**Name:** ${firstName || "Not set"}
+
+					💡 Use your User ID in the \`AUTHORIZED_USER_ID\` environment variable to restrict bot access to only you.
+				`,
+				{ parse_mode: "Markdown" },
+			);
+		});
+
 		// Start command
 		this.bot.command("start", (ctx) => {
 			ctx.reply(
@@ -1150,15 +1205,18 @@ class IQAgentsTelegramBot {
 					• /history (token_address) [limit_count] - View price history for any token (default: last 10 records)
 					• /alerts - View your recent alert history and notifications
 					• /settings - View current configuration and available customization options
+					• /myid - Get your Telegram user ID for bot authorization setup
 
 					Example Usage:
 					/history 0x123... 20 - Last 20 price records for token
 					/config - See all current settings and configurations
 					/status - Check if all monitoring services are running
+					/myid - Shows your user ID for AUTHORIZED_USER_ID env variable
 
 					Pro Tips:
 					• Use /config to see all your current settings
 					• Lower intervals = more frequent checks but more API usage (minimum: 60 seconds)
+					• Use /myid to get your user ID for restricting bot access to only you
 				`,
 				{
 					...Markup.inlineKeyboard([
@@ -1294,9 +1352,18 @@ class IQAgentsTelegramBot {
 	}
 
 	private async broadcastMessage(message: string): Promise<void> {
-		// For now, we'll just log the message
-		// In a full implementation, you'd maintain a list of subscribers
-		console.log("📢 Broadcast:", message);
+		try {
+			if (this.userChatId) {
+				await this.bot.telegram.sendMessage(this.userChatId, message, {
+					parse_mode: "Markdown",
+				});
+				console.log("✅ Notification sent to user");
+			} else {
+				console.log("⚠️ No user chat ID available, logging message:", message);
+			}
+		} catch (error) {
+			console.error("❌ Failed to send notification:", error);
+		}
 	}
 
 	async start(): Promise<void> {

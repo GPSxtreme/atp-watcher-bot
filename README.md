@@ -2,7 +2,7 @@
 
 A powerful Telegram bot for monitoring your IQ Agents portfolio. Get real-time notifications about portfolio value changes, price movements, agent statistics, and IQ token price fluctuations.
 
-<img src="./hero.png" />
+<img src="./assets/hero.png" />
 
 ## ✨ Features
 
@@ -128,7 +128,53 @@ A powerful Telegram bot for monitoring your IQ Agents portfolio. Get real-time n
 - `📊 /history <token_address> [limit]` - View price history for any token (default: last 10 prices)
 - `🚨 /alerts` - View your recent alert history and notifications
 - `⚙️ /settings` - View current configuration and available customization options
+- `👤 /myid` - Get your Telegram user ID for bot authorization setup
 - `❓ /help` - Show complete command guide with examples
+
+## 🔒 Security & Authorization
+
+### Single-User Personal Bot
+
+This bot is designed as a **personal monitoring assistant** for a single user. By default, it responds to any user, but you should restrict it to only yourself for privacy and security.
+
+#### Setup for Single-User Access
+
+1. **Get your Telegram User ID**: Send `/myid` to your bot to get your user ID
+2. **Configure single-user access**: Set the `AUTHORIZED_USER_ID` environment variable with your user ID  
+3. **Restart the bot**: Changes take effect after restart
+
+#### Example Configuration
+
+```bash
+# Restrict to only yourself (replace with your actual user ID)
+AUTHORIZED_USER_ID=123456789
+
+# Allow all users (not recommended for personal use)
+AUTHORIZED_USER_ID=
+```
+
+#### Personal Notifications
+
+Once configured with your user ID, the bot will:
+
+- **Send you direct messages** for all portfolio changes and price alerts
+- **Deny access** to any other users with a clear message
+- **Store your chat ID** automatically when you first interact with it
+- **Deliver real-time notifications** about your investments directly to your DMs
+
+#### Getting Your User ID
+
+1. Send `/myid` to your bot
+2. The bot will respond with your Telegram user ID  
+3. Use this ID in the `AUTHORIZED_USER_ID` environment variable
+
+#### Access Control Behavior
+
+- **You (Authorized User)**: Full access to all commands + receive DM notifications
+- **Other Users**: Receive "Access Denied" message for any command
+- **No Configuration**: If `AUTHORIZED_USER_ID` is empty, all users can interact (not recommended)
+
+**🔒 Privacy**: Once configured, only you can access your portfolio data and monitoring settings. All alerts and notifications are sent directly to your private chat with the bot.
 
 ## 🎯 Advanced Use Cases
 
@@ -205,6 +251,7 @@ All environment variables now include detailed descriptions with units and conte
 | `PRICE_CHECK_INTERVAL` | Interval in seconds between price checks for watched tokens | `60` | seconds |
 | `DEFAULT_HOLDINGS_THRESHOLD` | Default threshold in USD for portfolio value change notifications | `1000` | USD |
 | `DEFAULT_PRICE_CHANGE_THRESHOLD` | Default percentage threshold for price change notifications | `5` | % |
+| `AUTHORIZED_USER_ID` | Single authorized Telegram user ID who can interact with the bot (empty = allow all users) | `` (allow all) | - |
 | `NODE_ENV` | Runtime environment mode affecting logging and error handling behavior | `development` | - |
 | `LOG_LEVEL` | Minimum log level to output (debug < info < warn < error) | `info` | - |
 
@@ -377,7 +424,7 @@ The bot is optimized for Railway deployment with enhanced configuration:
 
 4. **Deploy**: Railway will automatically build and deploy
 5. **IMPORTANT**: Ensure you add Python as language provider to build better-sqlite3 binaries
-<img src="./config.png" />
+<img src="./assets/config.png" />
 
 ### Railway Configuration
 

@@ -49,10 +49,10 @@ const envSchema = z.object({
 	DEFAULT_PRICE_CHANGE_THRESHOLD: z
 		.string()
 		.optional()
-		.default("5")
+		.default("2")
 		.transform(Number)
 		.describe(
-			"Default percentage threshold for price change notifications (default: 5%)",
+			"Default percentage threshold for price change notifications (default: 2%)",
 		),
 	NODE_ENV: z
 		.enum(["development", "production", "test"])
@@ -64,6 +64,14 @@ const envSchema = z.object({
 		.enum(["debug", "info", "warn", "error"])
 		.default("info")
 		.describe("Minimum log level to output (debug < info < warn < error)"),
+	AUTHORIZED_USER_ID: z
+		.string()
+		.optional()
+		.default("")
+		.transform((val) => (val === "" ? null : Number(val)))
+		.describe(
+			"Single authorized Telegram user ID who can interact with the bot (empty = allow all users)",
+		),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

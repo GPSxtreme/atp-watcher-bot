@@ -52,73 +52,37 @@ class IQAgentsTelegramBot {
 			);
 		});
 
-		// Help command
+		// Help command with menu
 		this.bot.command("help", (ctx) => {
 			ctx.reply(
 				dedent`
-					🤖 *IQ Agents Watcher Bot - Complete Guide*
+					🤖 *IQ Agents Watcher Bot - Help Menu*
 
-					📊 *Portfolio & Holdings Management:*
-					• \`/portfolio\` - View your complete portfolio with current values, holdings breakdown, and total worth
-					• \`/set_threshold <amount_usd>\` - Set USD threshold for portfolio alerts (e.g. \`/set_threshold 1000\`)
-					• \`/set_change_threshold <percentage>\` - Set percentage change threshold (e.g. \`/set_change_threshold 10\`)
-					• \`/set_interval <seconds>\` - Set monitoring interval in seconds (e.g. \`/set_interval 300\`)
-					• \`/start_holdings\` - Begin continuous portfolio monitoring with automatic alerts
-					• \`/stop_holdings\` - Stop portfolio monitoring and alerts
+					Welcome! I'll help you monitor your IQ Agent investments and get notified about important changes.
 
-					📈 *Price Monitoring & Alerts:*
-					• \`/watch <token_address>\` - Add token to watchlist for price change alerts
-					• \`/watch_config <address> <threshold_%> [interval_seconds]\` - Configure token with custom settings
-					• \`/watch_advanced <address> <minor_%> <major_%> <critical_%> [interval_seconds]\` - Advanced threshold configuration
-					• \`/alert_config <address> <minor:on/off> <major:on/off> <critical:on/off>\` - Configure alert types
-					• \`/unwatch <token_address>\` - Remove token from watchlist
-					• \`/watched\` - View all tokens you're monitoring with latest prices
-					• \`/start_price\` - Enable price monitoring service for all watched tokens
-					• \`/stop_price\` - Disable price monitoring service
-
-					🔍 *Token Information & Research:*
-					• \`/top [mcap|holders|inferences] [limit_count]\` - Show top performing agents (default: top 10 by market cap)
-					• \`/info <token_address>\` - Get detailed agent profile including bio, stats, and creation date
-					• \`/stats <token_address>\` - View comprehensive statistics: price, market cap, holders, inferences
-					• \`/price <token_address>\` - Get real-time price for any agent token
-					• \`/iq_price\` - Current IQ token price (base token for all agents)
-
-					🪙 *IQ Token Monitoring (Base Token):*
-					• \`/start_iq\` - Start IQ token price monitoring
-					• \`/stop_iq\` - Stop IQ token price monitoring
-					• \`/iq_config <minor_%> <major_%> <critical_%> [interval_seconds]\` - Configure IQ price thresholds
-					• \`/iq_alerts <minor:on/off> <major:on/off> <critical:on/off>\` - Configure IQ alert types
-					• \`/iq_status\` - View IQ monitoring status and configuration
-
-					⚙️ *System & Configuration:*
-					• \`/config\` - View current configuration and monitoring settings
-					• \`/status\` - System health check: monitoring status, database stats, tracked tokens
-					• \`/history <token_address> [limit_count]\` - View price history for any token (default: last 10 records)
-					• \`/alerts\` - View your recent alert history and notifications
-					• \`/settings\` - View current configuration and available customization options
-
-					💡 *Getting Started Tips:*
-					1. Use \`/portfolio\` to see your current holdings
-					2. Set thresholds: \`/set_threshold 1000\` ($1000 USD) and \`/set_change_threshold 10\` (10%)
-					3. Configure monitoring interval: \`/set_interval 300\` (5 minutes)
-					4. Start monitoring with \`/start_holdings\`, \`/start_price\`, and \`/start_iq\`
-					5. Research agents with \`/top\` and \`/info <address>\`
-					6. Track tokens with custom settings: \`/watch_config <address> 5 60\` (5% threshold, 60s interval)
-					7. Monitor IQ token for market-wide insights: \`/iq_config 2 10 20\` (2%, 10%, 20% thresholds)
-
-					🎯 *Pro Tips:*
-					• Use \`/config\` to see all your current settings and token configurations
-					• Set different thresholds for different monitoring needs (minor 2%, major 10%, critical 20%)
-					• Use \`/watch_advanced\` for granular control over price alerts
-					• Configure alert types with \`/alert_config\` to reduce notification noise
-					• Lower intervals = more frequent checks but more API usage (minimum: 60 seconds)
-					• Use \`/watch_config\` for quick setup, \`/watch_advanced\` for precision
-					• Enable only the alert types you need to avoid spam
-					• IQ price changes often indicate market-wide agent price movements
-
-					Need help with a specific command? Just type it and I'll guide you through the usage!
+					Choose a category below to learn more:
 				`,
-				{ parse_mode: "Markdown" },
+				{
+					parse_mode: "Markdown",
+					...Markup.inlineKeyboard([
+						[
+							Markup.button.callback(
+								"📊 Portfolio & Holdings",
+								"help_portfolio",
+							),
+						],
+						[Markup.button.callback("📈 Price Monitoring", "help_price")],
+						[Markup.button.callback("🔍 Token Research", "help_research")],
+						[Markup.button.callback("🪙 IQ Token Monitoring", "help_iq")],
+						[Markup.button.callback("⚙️ System & Config", "help_system")],
+						[
+							Markup.button.callback(
+								"💡 Getting Started",
+								"help_getting_started",
+							),
+						],
+					]),
+				},
 			);
 		});
 
@@ -289,14 +253,14 @@ class IQAgentsTelegramBot {
 			}
 
 			message += "*Configuration Commands:*\n";
-			message += `💰 \`/set_threshold <amount>\` - Set USD threshold\n`;
-			message += `📊 \`/set_change_threshold <percentage>\` - Set change threshold\n`;
-			message += `⏰ \`/set_interval <seconds>\` - Set monitoring interval\n`;
-			message += `🎯 \`/watch_config <address> <threshold> [interval]\` - Configure token watching\n`;
-			message += `🔧 \`/watch_advanced <address> <minor%> <major%> <critical%> [interval]\` - Advanced token configuration\n`;
-			message += `🔔 \`/alert_config <address> <minor:on/off> <major:on/off> <critical:on/off>\` - Configure alert types\n`;
-			message += `🪙 \`/iq_config <minor%> <major%> <critical%> [interval]\` - Configure IQ monitoring\n`;
-			message += `🔔 \`/iq_alerts <minor:on/off> <major:on/off> <critical:on/off>\` - Configure IQ alerts\n`;
+			message += `💰 /set_threshold <amount> - Set USD threshold\n`;
+			message += `📊 /set_change_threshold <percentage> - Set change threshold\n`;
+			message += `⏰ /set_interval <seconds> - Set monitoring interval\n`;
+			message += `🎯 /watch_config <address> <threshold> [interval] - Configure token watching\n`;
+			message += `🔧 /watch_advanced <address> <minor%> <major%> <critical%> [interval] - Advanced token configuration\n`;
+			message += `🔔 /alert_config <address> <minor:on/off> <major:on/off> <critical:on/off> - Configure alert types\n`;
+			message += `🪙 /iq_config <minor%> <major%> <critical%> [interval] - Configure IQ monitoring\n`;
+			message += `🔔 /iq_alerts <minor:on/off> <major:on/off> <critical:on/off> - Configure IQ alerts\n`;
 
 			ctx.reply(message, { parse_mode: "Markdown" });
 		});
@@ -637,10 +601,10 @@ class IQAgentsTelegramBot {
 			message += `🔔 Critical: ${iqStatus.config.enableCriticalAlerts ? "✅ Enabled" : "❌ Disabled"}\n\n`;
 
 			message += `*Available Commands:*\n`;
-			message += `▶️ \`/start_iq\` - Start IQ price monitoring\n`;
-			message += `⏹️ \`/stop_iq\` - Stop IQ price monitoring\n`;
-			message += `⚙️ \`/iq_config <minor%> <major%> <critical%> [interval]\` - Configure thresholds\n`;
-			message += `🔔 \`/iq_alerts <minor:on/off> <major:on/off> <critical:on/off>\` - Configure alerts\n`;
+			message += `▶️ /start_iq - Start IQ price monitoring\n`;
+			message += `⏹️ /stop_iq - Stop IQ price monitoring\n`;
+			message += `⚙️ /iq_config <minor%> <major%> <critical%> [interval] - Configure thresholds\n`;
+			message += `🔔 /iq_alerts <minor:on/off> <major:on/off> <critical:on/off> - Configure alerts\n`;
 
 			ctx.reply(message, { parse_mode: "Markdown" });
 		});
@@ -1056,18 +1020,222 @@ class IQAgentsTelegramBot {
 			}
 
 			message += `*Configuration Commands:*\n`;
-			message += `💰 \`/set_threshold <amount>\` - Set USD threshold for portfolio alerts\n`;
-			message += `📊 \`/set_change_threshold <percentage>\` - Set percentage change threshold\n`;
-			message += `⏰ \`/set_interval <seconds>\` - Set monitoring interval\n`;
-			message += `🎯 \`/watch_config <address> <threshold> [interval]\` - Configure token monitoring\n`;
-			message += `⚙️ \`/config\` - View complete configuration overview\n`;
-			message += `📊 \`/history <token> [limit]\` - View price history\n`;
-			message += `🚨 \`/alerts\` - View recent alerts\n`;
+			message += `💰 /set_threshold <amount> - Set USD threshold for portfolio alerts\n`;
+			message += `📊 /set_change_threshold <percentage> - Set percentage change threshold\n`;
+			message += `⏰ /set_interval <seconds> - Set monitoring interval\n`;
+			message += `🎯 /watch_config <address> <threshold> [interval] - Configure token monitoring\n`;
+			message += `⚙️ /config - View complete configuration overview\n`;
+			message += `📊 /history <token> [limit] - View price history\n`;
+			message += `🚨 /alerts - View recent alerts\n`;
 
 			ctx.reply(message, { parse_mode: "Markdown" });
 		});
 
-		// Inline query handlers
+		// Help category handlers
+		this.bot.action("help_portfolio", async (ctx) => {
+			await ctx.answerCbQuery();
+			await ctx.editMessageText(
+				dedent`
+					📊 Portfolio & Holdings Management
+
+					• /portfolio - View your complete portfolio with current values, holdings breakdown, and total worth
+					• /set_threshold (amount_usd) - Set USD threshold for portfolio alerts (e.g. /set_threshold 1000)
+					• /set_change_threshold (percentage) - Set percentage change threshold (e.g. /set_change_threshold 10)
+					• /set_interval (seconds) - Set monitoring interval in seconds (e.g. /set_interval 300)
+					• /start_holdings - Begin continuous portfolio monitoring with automatic alerts
+					• /stop_holdings - Stop portfolio monitoring and alerts
+
+					Example Usage:
+					/set_threshold 1000 - Alert when portfolio changes by $1000
+					/set_change_threshold 10 - Alert on 10% portfolio changes
+					/set_interval 300 - Check every 5 minutes
+				`,
+				{
+					...Markup.inlineKeyboard([
+						[Markup.button.callback("⬅️ Back to Help Menu", "help_main")],
+					]),
+				},
+			);
+		});
+
+		this.bot.action("help_price", async (ctx) => {
+			await ctx.answerCbQuery();
+			await ctx.editMessageText(
+				dedent`
+					📈 Price Monitoring & Alerts
+
+					• /watch (token_address) - Add token to watchlist for price change alerts
+					• /watch_config (address) (threshold_%) [interval_seconds] - Configure token with custom settings
+					• /watch_advanced (address) (minor_%) (major_%) (critical_%) [interval_seconds] - Advanced threshold configuration
+					• /alert_config (address) (minor:on/off) (major:on/off) (critical:on/off) - Configure alert types
+					• /unwatch (token_address) - Remove token from watchlist
+					• /watched - View all tokens you're monitoring with latest prices
+					• /start_price - Enable price monitoring service for all watched tokens
+					• /stop_price - Disable price monitoring service
+
+					Example Usage:
+					/watch_config 0x123... 5 60 - Watch token, 5% threshold, 60s interval
+					/watch_advanced 0x123... 2 10 20 - Advanced: 2%, 10%, 20% thresholds
+					/alert_config 0x123... on off on - Enable minor & critical alerts only
+				`,
+				{
+					...Markup.inlineKeyboard([
+						[Markup.button.callback("⬅️ Back to Help Menu", "help_main")],
+					]),
+				},
+			);
+		});
+
+		this.bot.action("help_research", async (ctx) => {
+			await ctx.answerCbQuery();
+			await ctx.editMessageText(
+				dedent`
+					🔍 Token Information & Research
+
+					• /top [mcap|holders|inferences] [limit_count] - Show top performing agents (default: top 10 by market cap)
+					• /info (token_address) - Get detailed agent profile including bio, stats, and creation date
+					• /stats (token_address) - View comprehensive statistics: price, market cap, holders, inferences
+					• /price (token_address) - Get real-time price for any agent token
+					• /iq_price - Current IQ token price (base token for all agents)
+
+					Example Usage:
+					/top mcap 5 - Top 5 agents by market cap
+					/top holders 10 - Top 10 agents by holder count
+					/info 0x123... - Detailed agent information
+					/stats 0x123... - Price, market cap, holders stats
+				`,
+				{
+					...Markup.inlineKeyboard([
+						[Markup.button.callback("⬅️ Back to Help Menu", "help_main")],
+					]),
+				},
+			);
+		});
+
+		this.bot.action("help_iq", async (ctx) => {
+			await ctx.answerCbQuery();
+			await ctx.editMessageText(
+				dedent`
+					🪙 IQ Token Monitoring (Base Token)
+
+					• /start_iq - Start IQ token price monitoring
+					• /stop_iq - Stop IQ token price monitoring
+					• /iq_config (minor_%) (major_%) (critical_%) [interval_seconds] - Configure IQ price thresholds
+					• /iq_alerts (minor:on/off) (major:on/off) (critical:on/off) - Configure IQ alert types
+					• /iq_status - View IQ monitoring status and configuration
+					• /iq_price - Get current IQ token price
+
+					Example Usage:
+					/iq_config 2 10 20 60 - 2%/10%/20% thresholds, 60s interval
+					/iq_alerts on off on - Enable minor & critical alerts only
+
+					Note: IQ price changes often indicate market-wide agent price movements
+				`,
+				{
+					...Markup.inlineKeyboard([
+						[Markup.button.callback("⬅️ Back to Help Menu", "help_main")],
+					]),
+				},
+			);
+		});
+
+		this.bot.action("help_system", async (ctx) => {
+			await ctx.answerCbQuery();
+			await ctx.editMessageText(
+				dedent`
+					⚙️ System & Configuration
+
+					• /config - View current configuration and monitoring settings
+					• /status - System health check: monitoring status, database stats, tracked tokens
+					• /history (token_address) [limit_count] - View price history for any token (default: last 10 records)
+					• /alerts - View your recent alert history and notifications
+					• /settings - View current configuration and available customization options
+
+					Example Usage:
+					/history 0x123... 20 - Last 20 price records for token
+					/config - See all current settings and configurations
+					/status - Check if all monitoring services are running
+
+					Pro Tips:
+					• Use /config to see all your current settings
+					• Lower intervals = more frequent checks but more API usage (minimum: 60 seconds)
+				`,
+				{
+					...Markup.inlineKeyboard([
+						[Markup.button.callback("⬅️ Back to Help Menu", "help_main")],
+					]),
+				},
+			);
+		});
+
+		this.bot.action("help_getting_started", async (ctx) => {
+			await ctx.answerCbQuery();
+			await ctx.editMessageText(
+				dedent`
+					💡 Getting Started Guide
+
+					Quick Setup (5 steps):
+					1. /portfolio - See your current holdings
+					2. /set_threshold 1000 - Set $1000 USD alert threshold
+					3. /set_change_threshold 10 - Set 10% change threshold
+					4. /set_interval 300 - Check every 5 minutes
+					5. /start_holdings - Start monitoring!
+
+					Advanced Setup:
+					• Research agents: /top and /info (address)
+					• Track specific tokens: /watch_config (address) 5 60
+					• Monitor IQ token: /iq_config 2 10 20
+					• Start all services: /start_price and /start_iq
+
+					Pro Tips:
+					• Set different thresholds for different monitoring needs
+					• Use /watch_config for quick setup, /watch_advanced for precision
+					• Enable only the alert types you need to avoid spam
+					• Configure alert types with /alert_config to reduce noise
+				`,
+				{
+					...Markup.inlineKeyboard([
+						[Markup.button.callback("⬅️ Back to Help Menu", "help_main")],
+					]),
+				},
+			);
+		});
+
+		this.bot.action("help_main", async (ctx) => {
+			await ctx.answerCbQuery();
+			await ctx.editMessageText(
+				dedent`
+					🤖 *IQ Agents Watcher Bot - Help Menu*
+
+					Welcome! I'll help you monitor your IQ Agent investments and get notified about important changes.
+
+					Choose a category below to learn more:
+				`,
+				{
+					parse_mode: "Markdown",
+					...Markup.inlineKeyboard([
+						[
+							Markup.button.callback(
+								"📊 Portfolio & Holdings",
+								"help_portfolio",
+							),
+						],
+						[Markup.button.callback("📈 Price Monitoring", "help_price")],
+						[Markup.button.callback("🔍 Token Research", "help_research")],
+						[Markup.button.callback("🪙 IQ Token Monitoring", "help_iq")],
+						[Markup.button.callback("⚙️ System & Config", "help_system")],
+						[
+							Markup.button.callback(
+								"💡 Getting Started",
+								"help_getting_started",
+							),
+						],
+					]),
+				},
+			);
+		});
+
+		// Inline query handlers for start menu
 		this.bot.action("portfolio_status", async (ctx) => {
 			await ctx.answerCbQuery();
 			ctx.telegram.sendMessage(
@@ -1088,7 +1256,7 @@ class IQAgentsTelegramBot {
 			await ctx.answerCbQuery();
 			ctx.telegram.sendMessage(
 				ctx.chat?.id!,
-				"Use /top to view top agents by market cap.",
+				"Use /top to view top agents on atp",
 			);
 		});
 	}

@@ -508,6 +508,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 - [IQ Agents Platform](https://app.iqai.com)
 - [Telegram Bot API](https://core.telegram.org/bots/api)
-- [Railway Deployment](https://railway.app)
+- [Railway Deployment](https://railway.app).
 
 ---
